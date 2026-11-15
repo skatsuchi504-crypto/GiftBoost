@@ -212,6 +212,7 @@ function dailyBonus() {
     stars += 25;
 
     localStorage.setItem('giftboost_stars', stars);
+    updateBalance();
     localStorage.setItem('giftboost_daily', today);
 
     result.textContent = 'Получено 25 ⭐ Stars!';
@@ -233,6 +234,7 @@ function claimTask(task, reward) {
     stars += reward;
 
     localStorage.setItem('giftboost_stars', stars);
+    updateBalance();
 
     alert('Получено ' + reward + ' ⭐ Stars!');
 }
@@ -301,6 +303,11 @@ function openCase(name) {
         name + ': игровая механика скоро появится!';
 }
 
+function updateBalance() {
+    const stars = Number(localStorage.getItem('giftboost_stars') || 0);
+    document.getElementById('balance').textContent = stars;
+}
+
 function saveProfile() {
     const name = document.getElementById('playerName').value.trim();
 
@@ -315,6 +322,8 @@ function saveProfile() {
 
 document.getElementById('playerName').value =
     localStorage.getItem('giftboost_name') || '';
+
+updateBalance();
 </script></body>
 </html>
 
