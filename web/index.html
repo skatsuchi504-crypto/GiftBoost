@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GiftBoost</title>
+
+<style>
+body {
+    background: #100d1c;
+    color: white;
+    font-family: Arial;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    color: #b98cff;
+    font-size: 38px;
+}
+
+.card {
+    background: #211936;
+    padding: 22px;
+    border-radius: 20px;
+    margin: 20px auto;
+    max-width: 450px;
+}
+
+input, button {
+    padding: 13px;
+    margin: 7px;
+    border: 0;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+input {
+    width: 80%;
+}
+
+button {
+    background: #985cff;
+    color: white;
+}
+
+#result {
+    line-height: 1.8;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td, th {
+    padding: 12px 5px;
+    border-bottom: 1px solid #493663;
+}
+
+th {
+    color: #c69aff;
+}
+
+.gold {
+    color: #ffd66b;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎁 GiftBoost</h1>
+
+<div class="card">
+<h2>Игровой профиль</h2>
+
+<input id="playerName" placeholder="Твоё имя">
+
+<h2>Играй 1 на 1</h2>
+
+<button onclick="createRoom()">Создать комнату</button>
+
+<hr>
+
+<input id="roomCode" placeholder="Код комнаты">
+
+<br>
+
+<button onclick="joinRoom()">Войти в комнату</button>
+
+<div id="result"></div>
+</div>
+
+<div class="card">
+<h2>🏆 Таблица лидеров</h2>
+
+<table>
+<thead>
+<tr>
+<th>Место</th>
+<th>Игрок</th>
+<th>Победы</th>
+<th>Очки</th>
+</tr>
+</thead>
+
+<tbody id="ranking">
+<tr><td colspan="4">Загрузка...</td></tr>
+</tbody>
+</table>
+
+<button onclick="loadRanking()">Обновить рейтинг</button>
+</div>
+
+<script>
+
+let currentRoom = "";
+
+function getName() {
+    return document.getElementById("playerName").value.trim();
+}
+
+async function createRoom() {
+
+    const name = getName();
+
+    if (!name) {
+        alert("Введи своё имя!");
+        return;
+    }
+
+    const response = await fetch("/api/create", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({name: name})
+    });
+
+    const data = await response.json();
+
+    currentRoom = data.room;
+
+    document.getElementById("result").innerHTML =
+        "🎮 Комната создана!<br>" +
+        "Код: <b>" + currentRoom + "</b><br>" +
+        "Отправь код другу.";
+}
+
+async function joinRoom() {
+
+    const name = getName();
+    const code = document.getElementById("roomCode").value.trim();
+
+    if (!name || !code) {
+        alert("Введи имя и код комнаты!");
+        return;
+    }
+
+    const response = await fetch("/api/join", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            name: name,
+            room: code
+        })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        document.getElementById("result").innerText = data.error;
+        return;
+    }
+
+    currentRoom = code;
+
+    document.getElementById("result").innerHTML =
+        "✅ Ты присоединился!<br>" +
+        "<button onclick='checkResult()'>Посмотреть результат</button>";
+
+    loadRanking();
+}
+
+async function checkResult() {
+
+    const response = await fetch("/api/state?room=" + currentRoom);
+    const data = await response.json();
+
+    if (data.players.length < 2) {
+        document.getElementById("result").innerText =
+            "⏳ Ждём второго игрока...";
+        return;
+    }
+
+    let winner = "🤝 Ничья!";
+
+    if (data.winner === 0) winner = "🏆 Победил " + data.players[0];
+    if (data.winner === 1) winner = "🏆 Победил " + data.players[1];
+
+    document.getElementById("result").innerHTML =
+        "<h2>🎲 Результаты</h2>" +
+        data.players[0] + ": " + data.numbers[0] + "<br>" +
+        data.players[1] + ": " + data.numbers[1] + "<br>" +
+        "<h2 class='gold'>" + winner + "</h2>";
+
+    loadRanking();
+}
+
+async function loadRanking() {
+
+    const response = await fetch("/api/leaderboard");
+    const data = await response.json();
+
+    const ranking = document.getElementById("ranking");
+
+    ranking.innerHTML = "";
+
+    if (data.length === 0) {
+        ranking.innerHTML =
+            "<tr><td colspan='4'>Пока нет игроков</td></tr>";
+        return;
+    }
+
+    data.forEach((player, index) => {
+
+        const row = document.createElement("tr");
+
+        const values = [
+            index + 1,
+            player.name,
+            player.wins,
+            player.points
+        ];
+
+        values.forEach(value => {
+            const cell = document.createElement("td");
+            cell.textContent = value;
+            row.appendChild(cell);
+        });
+
+        ranking.appendChild(row);
+    });
+}
+
+loadRanking();
+
+</script>
+
+</body>
+</html>
