@@ -6,246 +6,288 @@
 <title>GiftBoost</title>
 
 <style>
+* { box-sizing:border-box; }
 body {
-    background: #100d1c;
-    color: white;
-    font-family: Arial;
-    text-align: center;
-    padding: 20px;
+    margin:0;
+    padding:20px 15px 90px;
+    background:#101113;
+    color:#eee;
+    font-family:Arial,sans-serif;
 }
-
-h1 {
-    color: #b98cff;
-    font-size: 38px;
+header {
+    text-align:center;
+    color:#d8b76a;
+    font-size:28px;
+    font-weight:bold;
+    margin:20px 0 30px;
 }
-
 .card {
-    background: #211936;
-    padding: 22px;
-    border-radius: 20px;
-    margin: 20px auto;
-    max-width: 450px;
+    background:#202124;
+    border:1px solid #39352b;
+    border-radius:16px;
+    padding:20px;
+    margin:12px 0;
 }
-
-input, button {
-    padding: 13px;
-    margin: 7px;
-    border: 0;
-    border-radius: 10px;
-    font-size: 16px;
+h2 { color:#d8b76a; }
+.games {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
 }
-
-input {
-    width: 80%;
+.game {
+    background:#202124;
+    border:1px solid #39352b;
+    border-radius:15px;
+    padding:22px 8px;
+    text-align:center;
+    font-size:17px;
+    cursor:pointer;
 }
-
+.game span {
+    display:block;
+    font-size:30px;
+    margin-bottom:10px;
+}
 button {
-    background: #985cff;
-    color: white;
+    background:linear-gradient(135deg,#d9bd79,#a98743);
+    color:#171717;
+    border:0;
+    border-radius:10px;
+    padding:13px 18px;
+    font-weight:bold;
+    cursor:pointer;
 }
-
-#result {
-    line-height: 1.8;
-    margin-top: 20px;
+input {
+    background:#111214;
+    color:white;
+    border:1px solid #55514a;
+    border-radius:9px;
+    padding:13px;
+    width:100%;
+    margin:8px 0;
 }
-
-table {
-    width: 100%;
-    border-collapse: collapse;
+.page { display:none; }
+.page.active { display:block; }
+nav {
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:#191a1c;
+    border-top:1px solid #39352b;
+    display:flex;
+    justify-content:space-around;
+    padding:13px 4px;
 }
-
-td, th {
-    padding: 12px 5px;
-    border-bottom: 1px solid #493663;
+nav button {
+    background:transparent;
+    color:#d8b76a;
+    padding:8px;
 }
-
-th {
-    color: #c69aff;
-}
-
-.gold {
-    color: #ffd66b;
-}
+.gold { color:#d8b76a; }
 </style>
 </head>
 
 <body>
 
-<h1>🎁 GiftBoost</h1>
+<header>🎁 GiftBoost</header>
+
+<section id="games" class="page active">
+<h2>🎮 Игровой центр</h2>
+
+<div class="games">
+<div class="game" onclick="openGame('Dice')"><span>🎲</span>Dice</div>
+<div class="game" onclick="openGame('Darts')"><span>🎯</span>Darts</div>
+<div class="game" onclick="openGame('Coin Flip')"><span>🪙</span>Coin Flip</div>
+<div class="game" onclick="openGame('Колесо удачи')"><span>🎡</span>Колесо</div>
+<div class="game" onclick="openGame('Угадай число')"><span>🧠</span>Угадай число</div>
+<div class="game" onclick="openGame('Memory')"><span>🃏</span>Memory</div>
+<div class="game" onclick="openGame('Reaction')"><span>⚡</span>Reaction</div>
+<div class="game" onclick="openGame('Mines')"><span>💣</span>Mines</div>
+<div class="game" onclick="openGame('Upgrade')"><span>⚡</span>Upgrade</div>
+<div class="game" onclick="openGame('Игра 1 на 1')"><span>🏆</span>Игра 1 на 1</div>
+</div>
+
+<div class="card" id="gamePanel" style="display:none">
+<h2 id="gameTitle"></h2>
+<p>Скоро здесь появится игровая механика!</p>
+<button onclick="closeGame()">Назад</button>
+</div>
+</section>
+
+<section id="cases" class="page">
+<h2>🎁 Кейсы</h2>
+<div class="card">
+<h3>🥉 Basic Case</h3>
+<p>Обычные виртуальные предметы</p>
+<button onclick="openCase('Basic')">Открыть</button>
+</div>
+<div class="card">
+<h3>🥈 Silver Case</h3>
+<p>Серебряная коллекция</p>
+<button onclick="openCase('Silver')">Открыть</button>
+</div>
+<div class="card">
+<h3>🥇 Gold Case</h3>
+<p>Золотая коллекция</p>
+<button onclick="openCase('Gold')">Открыть</button>
+</div>
+<div class="card">
+<h3>💎 Diamond Case</h3>
+<p>Редкие виртуальные предметы</p>
+<button onclick="openCase('Diamond')">Открыть</button>
+</div>
+<p id="caseResult" class="gold"></p>
+</section>
+
+<section id="tasks" class="page">
+<div class="card">
+    <h3>🎁 Ежедневный бонус</h3>
+    <p>Заходи каждый день и получай 25 ⭐ Stars!</p>
+    <button onclick="dailyBonus()">Забрать бонус</button>
+    <p id="dailyResult"></p>
+</div>
+
+<h2>📋 Задания</h2>
 
 <div class="card">
-<h2>Игровой профиль</h2>
-
-<input id="playerName" placeholder="Твоё имя">
-
-<h2>Играй 1 на 1</h2>
-
-<button onclick="createRoom()">Создать комнату</button>
-
-<hr>
-
-<input id="roomCode" placeholder="Код комнаты">
-
-<br>
-
-<button onclick="joinRoom()">Войти в комнату</button>
-
-<div id="result"></div>
+<h3>🎮 Первая игра</h3>
+<p>Познакомься с игровым центром.</p>
+<button onclick="claimTask('first_game', 10)">Получить 10 ⭐</button>
 </div>
 
 <div class="card">
-<h2>🏆 Таблица лидеров</h2>
-
-<table>
-<thead>
-<tr>
-<th>Место</th>
-<th>Игрок</th>
-<th>Победы</th>
-<th>Очки</th>
-</tr>
-</thead>
-
-<tbody id="ranking">
-<tr><td colspan="4">Загрузка...</td></tr>
-</tbody>
-</table>
-
-<button onclick="loadRanking()">Обновить рейтинг</button>
+<h3>🎁 Исследователь</h3>
+<p>Посети раздел кейсов.</p>
+<button onclick="claimTask('cases', 15)">Получить 15 ⭐</button>
 </div>
+
+<div class="card">
+<h3>👤 Создай профиль</h3>
+<p>Сохрани своё имя в профиле.</p>
+<button onclick="claimTask('profile', 20)">Получить 20 ⭐</button>
+</div>
+</section>
 
 <script>
+function dailyBonus() {
+    const today = new Date().toLocaleDateString();
+    const lastBonus = localStorage.getItem('giftboost_daily');
 
-let currentRoom = "";
+    const result = document.getElementById('dailyResult');
 
-function getName() {
-    return document.getElementById("playerName").value.trim();
+    if (lastBonus === today) {
+        result.textContent = 'Ты уже получил бонус сегодня!';
+        return;
+    }
+
+    let stars = Number(localStorage.getItem('giftboost_stars') || 0);
+    stars += 25;
+
+    localStorage.setItem('giftboost_stars', stars);
+    localStorage.setItem('giftboost_daily', today);
+
+    result.textContent = 'Получено 25 ⭐ Stars!';
+}
+function claimTask(task, reward) {
+    let completed = JSON.parse(
+        localStorage.getItem('giftboost_tasks') || '[]'
+    );
+
+    if (completed.includes(task)) {
+        alert('Это задание уже выполнено!');
+        return;
+    }
+
+    completed.push(task);
+    localStorage.setItem('giftboost_tasks', JSON.stringify(completed));
+
+    let stars = Number(localStorage.getItem('giftboost_stars') || 0);
+    stars += reward;
+
+    localStorage.setItem('giftboost_stars', stars);
+
+    alert('Получено ' + reward + ' ⭐ Stars!');
 }
 
-async function createRoom() {
-
-    const name = getName();
-
-    if (!name) {
-        alert("Введи своё имя!");
-        return;
-    }
-
-    const response = await fetch("/api/create", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({name: name})
-    });
-
-    const data = await response.json();
-
-    currentRoom = data.room;
-
-    document.getElementById("result").innerHTML =
-        "🎮 Комната создана!<br>" +
-        "Код: <b>" + currentRoom + "</b><br>" +
-        "Отправь код другу.";
+function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    closeGame();
 }
 
-async function joinRoom() {
+function openGame(name) {
+    const panel = document.getElementById('gamePanel');
+    panel.style.display = 'block';
 
-    const name = getName();
-    const code = document.getElementById("roomCode").value.trim();
+    document.getElementById('gameTitle').textContent = name;
 
-    if (!name || !code) {
-        alert("Введи имя и код комнаты!");
-        return;
+    if (name === 'Dice') {
+        panel.innerHTML = `
+            <h2>🎲 Dice</h2>
+            <p id="diceResult">Нажми кнопку, чтобы бросить кубик!</p>
+            <button onclick="playDice()">Бросить кубик</button>
+            <button onclick="closeGame()">Закрыть</button>
+        `;
+    } else {
+        panel.innerHTML = `
+            <h2>${name}</h2>
+            <p>Игровая механика скоро появится!</p>
+            <button onclick="closeGame()">Закрыть</button>
+        `;
     }
-
-    const response = await fetch("/api/join", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            name: name,
-            room: code
-        })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-        document.getElementById("result").innerText = data.error;
-        return;
-    }
-
-    currentRoom = code;
-
-    document.getElementById("result").innerHTML =
-        "✅ Ты присоединился!<br>" +
-        "<button onclick='checkResult()'>Посмотреть результат</button>";
-
-    loadRanking();
 }
 
-async function checkResult() {
+async function playDice() {
+    const resultElement = document.getElementById('diceResult');
+    resultElement.textContent = 'Бросаем кубик...';
 
-    const response = await fetch("/api/state?room=" + currentRoom);
-    const data = await response.json();
+    const name = localStorage.getItem('giftboost_name') || 'Игрок';
 
-    if (data.players.length < 2) {
-        document.getElementById("result").innerText =
-            "⏳ Ждём второго игрока...";
-        return;
-    }
-
-    let winner = "🤝 Ничья!";
-
-    if (data.winner === 0) winner = "🏆 Победил " + data.players[0];
-    if (data.winner === 1) winner = "🏆 Победил " + data.players[1];
-
-    document.getElementById("result").innerHTML =
-        "<h2>🎲 Результаты</h2>" +
-        data.players[0] + ": " + data.numbers[0] + "<br>" +
-        data.players[1] + ": " + data.numbers[1] + "<br>" +
-        "<h2 class='gold'>" + winner + "</h2>";
-
-    loadRanking();
-}
-
-async function loadRanking() {
-
-    const response = await fetch("/api/leaderboard");
-    const data = await response.json();
-
-    const ranking = document.getElementById("ranking");
-
-    ranking.innerHTML = "";
-
-    if (data.length === 0) {
-        ranking.innerHTML =
-            "<tr><td colspan='4'>Пока нет игроков</td></tr>";
-        return;
-    }
-
-    data.forEach((player, index) => {
-
-        const row = document.createElement("tr");
-
-        const values = [
-            index + 1,
-            player.name,
-            player.wins,
-            player.points
-        ];
-
-        values.forEach(value => {
-            const cell = document.createElement("td");
-            cell.textContent = value;
-            row.appendChild(cell);
+    try {
+        const response = await fetch('/api/dice', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name: name})
         });
 
-        ranking.appendChild(row);
-    });
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Ошибка сервера');
+        }
+
+        resultElement.textContent =
+            '🎲 Выпало: ' + data.result +
+            ' | Всего ⭐ Stars: ' + data.points;
+    } catch (error) {
+        resultElement.textContent = 'Ошибка: ' + error.message;
+    }
 }
 
-loadRanking();
+function closeGame() {
+    document.getElementById('gamePanel').style.display = 'none';
+}
 
-</script>
+function openCase(name) {
+    document.getElementById('caseResult').textContent =
+        name + ': игровая механика скоро появится!';
+}
 
-</body>
+function saveProfile() {
+    const name = document.getElementById('playerName').value.trim();
+
+    if (!name) {
+        alert('Введи имя!');
+        return;
+    }
+
+    localStorage.setItem('giftboost_name', name);
+    alert('Профиль сохранён!');
+}
+
+document.getElementById('playerName').value =
+    localStorage.getItem('giftboost_name') || '';
+</script></body>
 </html>
+
