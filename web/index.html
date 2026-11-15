@@ -169,6 +169,33 @@ nav button {
 </div>
 </section>
 
+
+<section id="rating" class="page">
+<h2>🏆 Рейтинг</h2>
+<div class="card">
+<p>Таблица лидеров скоро появится!</p>
+</div>
+</section>
+
+<section id="profile" class="page">
+<h2>👤 Профиль</h2>
+<div class="card">
+<input id="playerName" placeholder="Твоё имя">
+<h3>Баланс: <span id="balance">0</span> ⭐ Stars</h3>
+<p>🏆 Победы: <span id="wins">0</span></p>
+<p>⭐ Уровень: <span id="level">1</span></p>
+<button onclick="saveProfile()">Сохранить профиль</button>
+</div>
+</section>
+
+<nav>
+<button onclick="showPage('games')">🎮 Игры</button>
+<button onclick="showPage('cases')">🎁 Кейсы</button>
+<button onclick="showPage('tasks')">📋 Задания</button>
+<button onclick="showPage('rating')">🏆 Рейтинг</button>
+<button onclick="showPage('profile')">👤 Профиль</button>
+</nav>
+
 <script>
 function dailyBonus() {
     const today = new Date().toLocaleDateString();
